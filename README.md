@@ -14,11 +14,11 @@ TBD
 ## Authors
 
 * **Bams Guillaume** - [Guillaume](https://github.com/Guil02) - Developer
-* **Beuk Jiska** - [Jiska]() - Developer
+* **Beuk Jiska** - [Jiska](https://github.com/jiskabeuk) - Developer
 * **Karça Cavid** - [Cavid]() - Developer
 * **Leonidas Alexander** - [Alexander](https://github.com/alexanderleonidas) - Developer
-* **Passos Patrício Ferreira Tiago** - [Tiago]() - Developer
-* **Pompigna Lorenzo** - [Lorenzo]() - Developer
+* **Passos Patrício Ferreira Tiago** - [Tiago](https://github.com/Tpf2906) - Developer
+* **Pompigna Lorenzo** - [Lorenzo](https://github.com/Lozzio99) - Developer
 
 ## References
 
