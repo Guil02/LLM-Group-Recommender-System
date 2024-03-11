@@ -3,11 +3,14 @@ import os
 from dotenv import load_dotenv
 from discord import Intents, Client, Message
 from responses import get_response
+import logging
+from datetime import datetime
+
+logging.basicConfig(level=logging.INFO, filename=f'log/discord_bot-{datetime.now()}.log', filemode='w')
 
 # LOAD THE TOKEN
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
-print(TOKEN)
 
 # SETUP BOT
 intents: Intents = Intents.default()
@@ -47,7 +50,8 @@ async def on_message(message: Message) -> None:
     user_message: str = message.content
     channel: str = str(message.channel.name)
 
-    print(f'[{channel}] {username}: "{user_message}"')
+    logging.info(f'[{datetime.now()}][{channel}] {username}: "{user_message}"')
+    print(f'[{datetime.now()}][{channel}] {username}: "{user_message}"')
     await send_message(message, user_message)
 
 
