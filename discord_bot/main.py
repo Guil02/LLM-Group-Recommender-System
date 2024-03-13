@@ -6,6 +6,8 @@ from responses import get_response
 import logging
 from datetime import datetime
 
+if not os.path.exists('log'):
+    os.mkdir('log')
 logging.basicConfig(level=logging.INFO, filename=f'log/discord_bot-{datetime.now()}.log', filemode='w')
 
 # LOAD THE TOKEN
