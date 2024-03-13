@@ -8,7 +8,9 @@ from datetime import datetime
 
 if not os.path.exists('log'):
     os.mkdir('log')
-logging.basicConfig(level=logging.INFO, filename=f'log/discord_bot-{datetime.now()}.log', filemode='w')
+
+formatted_date = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+logging.basicConfig(level=logging.INFO, filename=f'log/discord_bot-{formatted_date}.log', filemode='w')
 
 # LOAD THE TOKEN
 load_dotenv()
