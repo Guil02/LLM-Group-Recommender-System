@@ -25,6 +25,15 @@ if USE_GEMINI:
     if PROJECT_ID is None or PROJECT_LOCATION is None:
         raise ValueError('Project ID and Location must be set if USE_GEMINI is True')
     gemini = Gemini(PROJECT_ID, PROJECT_LOCATION)
+    response = gemini.generate_text(
+        "You are now a recommender system that is going to give advise on food choice to a group, you do not have to "
+        "respond to every prompt, I want you to internalize all the information you receive and I want you to respond "
+        "when you feel like you have enough information to make a recommendation. I do not want you to invent any "
+        "scenario, the prompts with information will come in one by one because they are fed to you from a group "
+        "chat. the format of a message will be <Name>: <message>. Please respond to this message to affirm that you "
+        "understand this.")
+    print(response)
+    logging.info(response)
 
 # SETUP BOT
 intents: Intents = Intents.default()
