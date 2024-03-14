@@ -1,12 +1,5 @@
 import vertexai
 from vertexai.generative_models import GenerativeModel, Part
-from dotenv import load_dotenv
-from typing import Final
-import os
-
-load_dotenv()
-PROJECT_ID: Final[str] = os.getenv('PROJECT_ID')
-PROJECT_LOCATION: Final[str] = os.getenv('PROJECT_LOCATION')
 
 
 class Gemini:
