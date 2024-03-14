@@ -5,6 +5,7 @@ from discord import Intents, Client, Message
 from responses import get_response
 import logging
 from datetime import datetime
+from gemini import Gemini
 
 if not os.path.exists('log'):
     os.mkdir('log')
@@ -15,6 +16,13 @@ logging.basicConfig(level=logging.INFO, filename=f'log/discord_bot-{formatted_da
 # LOAD THE TOKEN
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
+USE_GEMINI: Final[bool] = False if os.getenv('USE_GEMINI') is None else os.getenv('USE_GEMINI')
+logging.info(f"{USE_GEMINI = }")
+
+if USE_GEMINI:
+    PROJECT_ID: Final[str] = os.getenv('PROJECT_ID')
+    PROJECT_LOCATION: Final[str] = os.getenv('PROJECT_LOCATION')
+    gemini = Gemini(PROJECT_ID, PROJECT_LOCATION)
 
 # SETUP BOT
 intents: Intents = Intents.default()
@@ -32,9 +40,18 @@ async def send_message(message: Message, user_message: str) -> None:
         user_message = user_message[1:]
 
     try:
-        response: str = get_response(user_message)
+        response: str = get_response(user_message, USE_GEMINI, gemini) if USE_GEMINI else get_response(user_message)
         logging.info(response)
-        await message.author.send(response) if is_private else await message.channel.send(response)
+
+        # if the response is longer than 2000 characters, split it into multiple messages
+        if len(response) > 2000:
+            while len(response) > 2000:
+                await message.author.send(response[:2000]) if is_private else await message.channel.send(
+                    response[:2000])
+                response = response[2000:]
+            await message.author.send(response) if is_private else await message.channel.send(response)
+        else:
+            await message.author.send(response) if is_private else await message.channel.send(response)
     except Exception as e:
         print(e)
 
