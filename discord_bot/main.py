@@ -22,6 +22,8 @@ logging.info(f"{USE_GEMINI = }")
 if USE_GEMINI:
     PROJECT_ID: Final[str] = os.getenv('PROJECT_ID')
     PROJECT_LOCATION: Final[str] = os.getenv('PROJECT_LOCATION')
+    if PROJECT_ID is None or PROJECT_LOCATION is None:
+        raise ValueError('Project ID and Location must be set if USE_GEMINI is True')
     gemini = Gemini(PROJECT_ID, PROJECT_LOCATION)
 
 # SETUP BOT
