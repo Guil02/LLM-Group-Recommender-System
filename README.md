@@ -9,13 +9,13 @@ textual explanations to discuss with the group.
 
 ## Current State
 
-TBD
+There is currently a basic discord bot implemented with a connection with the gemini api through google cloud.
 
 ## Authors
 
 * **Bams Guillaume** - [Guillaume](https://github.com/Guil02) - Developer
 * **Beuk Jiska** - [Jiska](https://github.com/jiskabeuk) - Developer
-* **Karça Cavid** - [Cavid]() - Developer
+* **Karça Cavid** - [Cavid](https://github.com/Caviid) - Developer
 * **Leonidas Alexander** - [Alexander](https://github.com/alexanderleonidas) - Developer
 * **Passos Patrício Ferreira Tiago** - [Tiago](https://github.com/Tpf2906) - Developer
 * **Pompigna Lorenzo** - [Lorenzo](https://github.com/Lozzio99) - Developer
