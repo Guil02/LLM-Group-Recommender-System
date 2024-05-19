@@ -1,6 +1,6 @@
 MIN_SCORE = 3.0
 
-def average_recommendation(preference_list):
+def average_recommendation(preference_list,max_tags=10):
     item_totals = {}
     item_counts = {}
 
@@ -15,9 +15,10 @@ def average_recommendation(preference_list):
 
     average_scores = {item: item_totals[item] / item_counts[item] for item in item_totals if item_totals[item] / item_counts[item] >= MIN_SCORE}
     recommended_items = sorted(average_scores.items(), key=lambda x: x[1], reverse=True)
+    recommended_items = recommended_items[0:max_tags]
     return recommended_items
 
-def least_misery_recommendation(preference_list):
+def least_misery_recommendation(preference_list,max_tags=10):
     item_min_scores = {}
 
     for preferences in preference_list:
@@ -28,9 +29,11 @@ def least_misery_recommendation(preference_list):
                 item_min_scores[item] = score
 
     recommended_items = {item: score for item, score in item_min_scores.items() if score >= MIN_SCORE}
-    return sorted(recommended_items.items(), key=lambda x: x[1], reverse=True)
+    recommended_items=  sorted(recommended_items.items(), key=lambda x: x[1], reverse=True)[0:max_tags]
 
-def most_pleasure_recommendation(preference_list):
+    return recommended_items
+
+def most_pleasure_recommendation(preference_list,max_tags=10):
     item_max_scores = {}
 
     for preferences in preference_list:
@@ -41,15 +44,8 @@ def most_pleasure_recommendation(preference_list):
                 item_max_scores[item] = score
 
     recommended_items = {item: score for item, score in item_max_scores.items() if score >= MIN_SCORE}
-    return sorted(recommended_items.items(), key=lambda x: x[1], reverse=True)
+    recommended_items = sorted(recommended_items.items(), key=lambda x: x[1], reverse=True)[0:max_tags]
 
-# Example usage
-preferences = [
-    {"banana": 5, "apple": 2, "orange": 3},
-    {"banana": 3, "apple": 2, "grape": 4},
-    {"banana": 4, "apple": 5, "grape": 2}
-]
+    return recommended_items
 
-print("Average Recommendation:", average_recommendation(preferences))
-print("Least Misery Recommendation:", least_misery_recommendation(preferences))
-print("Most Pleasure Recommendation:", most_pleasure_recommendation(preferences))
+
