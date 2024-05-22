@@ -1,8 +1,7 @@
 from typing import Final
 import os
 from dotenv import load_dotenv
-from discord import Intents, Client, Message, NotFound
-from discord.ext import commands
+from discord import Intents, Client, Message, NotFound, Reaction, User
 from responses import get_response
 import logging
 from datetime import datetime
@@ -42,6 +41,10 @@ intents.message_content = True  # NOQA
 intents.reactions = True
 client: Client = Client(intents=intents)
 
+# TODO: find better reactions for rating
+# Define the allowed reactions
+ALLOWED_REACTIONS = ['👍', '👎', '😂', '😮', '❤️'] # Just examples
+
 # MESSAGE FUNCTIONALITY
 async def send_message(message: Message, user_message: str) -> None:
     if not user_message:
@@ -64,6 +67,12 @@ async def send_message(message: Message, user_message: str) -> None:
             await message.author.send(response) if is_private else await message.channel.send(response)
         else:
             await message.author.send(response) if is_private else await message.channel.send(response)
+        
+        # TODO: Reactions should only appear on specific messages, such as recommendations
+        # Add allowed reactions to the bot's message
+        for reaction in ALLOWED_REACTIONS:
+            await message.add_reaction(reaction)
+        
     except Exception as e:
         print(e)
 
@@ -89,6 +98,8 @@ async def get_reactions_from_message(channel_id: int, message_id: int):
 @client.event
 async def on_ready() -> None:
     print(f'{client.user} has connected to Discord!')
+
+    # TODO: fix these parameters and find a way to use the reactions
     # Example usage of reactions
     channel_id = 123456789012345678  # Replace with your channel ID
     message_id = 987654321098765432  # Replace with your message ID
@@ -109,6 +120,19 @@ async def on_message(message: Message) -> None:
     logging.info(f'[{datetime.now()}][{channel}] {username}: "{user_message}"')
     print(f'[{datetime.now()}][{channel}] {username}: "{user_message}"')
     await send_message(message, user_message)
+
+
+@client.event
+async def on_reaction_add(reaction: Reaction, user: User) -> None:
+    if reaction.message.author == client.user:
+        if str(reaction.emoji) not in ALLOWED_REACTIONS:
+            await reaction.remove(user)
+
+@client.event
+async def on_reaction_remove(reaction: Reaction, user: User) -> None:
+    if reaction.message.author == client.user:
+        if str(reaction.emoji) not in ALLOWED_REACTIONS:
+            await reaction.remove(user)
 
 # MAIN ENTRY POINT
 def main() -> None:
