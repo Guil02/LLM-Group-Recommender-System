@@ -1,7 +1,8 @@
 from typing import Final
 import os
 from dotenv import load_dotenv
-from discord import Intents, Client, Message
+from discord import Intents, Client, Message, NotFound
+from discord.ext import commands
 from responses import get_response
 import logging
 from datetime import datetime
@@ -38,8 +39,8 @@ if USE_GEMINI:
 # SETUP BOT
 intents: Intents = Intents.default()
 intents.message_content = True  # NOQA
+intents.reactions = True
 client: Client = Client(intents=intents)
-
 
 # MESSAGE FUNCTIONALITY
 async def send_message(message: Message, user_message: str) -> None:
@@ -66,12 +67,34 @@ async def send_message(message: Message, user_message: str) -> None:
     except Exception as e:
         print(e)
 
+# FUNCTION TO GET REACTIONS FROM A SPECIFIC MESSAGE
+async def get_reactions_from_message(channel_id: int, message_id: int):
+    channel = client.get_channel(channel_id)
+    try:
+        message = await channel.fetch_message(message_id)
+        reactions = message.reactions
+        reaction_data = []
+
+        for reaction in reactions:
+            users = await reaction.users().flatten()
+            for user in users:
+                reaction_data.append((user.name, str(reaction.emoji)))
+
+        return reaction_data
+    except NotFound:
+        print("Message not found.")
+        return []
 
 # HANDLING STARTUP FOR BOT
 @client.event
 async def on_ready() -> None:
     print(f'{client.user} has connected to Discord!')
-
+    # Example usage of reactions
+    channel_id = 123456789012345678  # Replace with your channel ID
+    message_id = 987654321098765432  # Replace with your message ID
+    reaction_data = await get_reactions_from_message(channel_id, message_id)
+    for user, reaction in reaction_data:
+        print(f'User: {user}, Reaction: {reaction}')
 
 # HANDLING INCOMING MESSAGES
 @client.event
@@ -86,7 +109,6 @@ async def on_message(message: Message) -> None:
     logging.info(f'[{datetime.now()}][{channel}] {username}: "{user_message}"')
     print(f'[{datetime.now()}][{channel}] {username}: "{user_message}"')
     await send_message(message, user_message)
-
 
 # MAIN ENTRY POINT
 def main() -> None:
