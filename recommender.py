@@ -1,5 +1,9 @@
 MIN_SCORE = 3.0
 
+import openai
+
+api_key = ""
+
 def average_recommendation(preference_list,max_tags=10):
     item_totals = {}
     item_counts = {}
@@ -48,4 +52,28 @@ def most_pleasure_recommendation(preference_list,max_tags=10):
 
     return recommended_items
 
+def openai_recommendation(preference_list, max_tags=10,api_key=api_key):
+    openai.api_key = api_key
 
+    def construct_prompt(preference_list, max_tags):
+        prompt = (
+            "Given a list of user-rated preferences, aggregate the tags and provide the best tags for the group. "
+            "Each item in the list is a dictionary with tags and their corresponding ratings by users. "
+            "Here is an example of the list of preferences:\n\n"
+            '[{"tag1": 4, "tag2": 3}, {"tag1": 2, "tag3": 5}]\n\n'
+            "Here is the actual list of preferences:\n\n"
+            f"{preference_list}\n\n"
+            f"Please ONLY return the top {max_tags} tags that are best suited for the group based on user ratings. "
+            "Do not include any explanation or description of the method used to determine the best tags. "
+            "Simply list the tags in order of their suitability in the following format:\n"
+            '[("tag1",rating), ("tag2",rating), ("tag3",rating), ...]'
+        )
+        return prompt
+
+    prompt = construct_prompt(preference_list, max_tags)
+    response = openai.chat.completions.create(
+        model= "gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "You are a helpful assistant."}, 
+                  {"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content.strip()
