@@ -1,4 +1,4 @@
-from grsmodel.main_runner import GrsModule
+from grsmodel.main_runner.grs_module import GrsModule
 from discord import Client
 
 
