@@ -4,7 +4,7 @@ from discord import Client
 
 class RecommendationModule(GrsModule):
 
-    def __int__(self):
+    def __init__(self):
         super().__init__()
 
     def execute_module(self, bot: Client, *args, **kwargs):
