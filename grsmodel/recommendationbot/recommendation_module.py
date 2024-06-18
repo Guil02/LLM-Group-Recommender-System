@@ -7,5 +7,5 @@ class RecommendationModule(GrsModule):
     def __int__(self):
         super().__init__()
 
-    def execute_module(self, bot: Client):
+    def execute_module(self, bot: Client, *args, **kwargs):
         pass
