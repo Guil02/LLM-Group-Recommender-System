@@ -1,6 +1,7 @@
 MIN_SCORE = 3.0
+MAX_TAGS = 50
 
-def average_recommendation(preference_list,max_tags=10):
+def average_recommendation(preference_list,max_tags=MAX_TAGS):
     item_totals = {}
     item_counts = {}
 
@@ -18,7 +19,7 @@ def average_recommendation(preference_list,max_tags=10):
     recommended_items = recommended_items[0:max_tags]
     return recommended_items
 
-def least_misery_recommendation(preference_list,max_tags=10):
+def least_misery_recommendation(preference_list,max_tags=MAX_TAGS):
     item_min_scores = {}
 
     for preferences in preference_list:
@@ -33,7 +34,7 @@ def least_misery_recommendation(preference_list,max_tags=10):
 
     return recommended_items
 
-def most_pleasure_recommendation(preference_list,max_tags=10):
+def most_pleasure_recommendation(preference_list,max_tags=MAX_TAGS):
     item_max_scores = {}
 
     for preferences in preference_list:
