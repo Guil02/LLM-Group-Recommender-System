@@ -67,16 +67,16 @@ async def on_message(message: Message) -> None:
         module = module_creator.factory(current_mode)
         chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data)
 
-        # current_mode = module_modes[1]
-        # logging.info(f'Current mode: {current_mode}')
-        # module = module_creator.factory(current_mode)
-        # chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data)
-        #
-        # current_mode = module_modes[2]
-        # logging.info(f'Current mode: {current_mode}')
-        # module = module_creator.factory(current_mode)
-        # chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data)
-        # done = chat_data.get_finished()
+        current_mode = module_modes[1]
+        logging.info(f'Current mode: {current_mode}')
+        module = module_creator.factory(current_mode)
+        chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data)
+
+        current_mode = module_modes[2]
+        logging.info(f'Current mode: {current_mode}')
+        module = module_creator.factory(current_mode)
+        chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data)
+        done = chat_data.get_finished()
 
 
 def main():
