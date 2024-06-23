@@ -8,6 +8,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from typing import Final
 from grsmodel.chatbot.gemini import Gemini
+from chat_data import ChatData
 
 if not os.path.exists('log'):
     os.mkdir('log')
@@ -36,9 +37,51 @@ intents.reactions = True  # NOQA
 client: Client = commands.Bot(command_prefix='!', intents=intents)
 
 module_modes = ['chat', 'aggregation', 'recommendation']
-module: GrsModule = GrsModule()
+module: GrsModule = None
 module_creator: ModuleCreator = ModuleCreator()
+current_mode = 'chat'
+chat_data = ChatData()
 
-for mode in module_modes:
-    module = module_creator.factory(mode)
-    module.execute_module(client, gemini=gemini)
+
+@client.event
+async def on_message(message: Message) -> None:
+    if message.author == client.user:
+        return
+
+    username: str = str(message.author.name)
+    user_message: str = message.content
+    channel: str = str(message.channel.name)
+
+    logging.info(f'[{datetime.now()}][{channel}] {username}: "{user_message}"')
+
+    if not user_message.startswith('!startGRS'):
+        return
+
+    global module
+    global current_mode
+    global chat_data
+    chat_data.set_channel(message.channel)
+
+    done = False
+    while not done:
+        module = module_creator.factory(current_mode)
+        chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data)
+
+        # current_mode = module_modes[1]
+        # logging.info(f'Current mode: {current_mode}')
+        # module = module_creator.factory(current_mode)
+        # chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data)
+        #
+        # current_mode = module_modes[2]
+        # logging.info(f'Current mode: {current_mode}')
+        # module = module_creator.factory(current_mode)
+        # chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data)
+        # done = chat_data.get_finished()
+
+
+def main():
+    client.run(TOKEN)
+
+
+if __name__ == '__main__':
+    main()

@@ -7,14 +7,14 @@ from discord.ext import commands
 from discord.ui import Button, View
 
 # TODO: make sure this is added manually to the parent folder
-recipes_df = pd.read_csv("..\\cleaned_recipes_with_country.csv")
+recipes_df = pd.read_csv("../cleaned_recipes_with_country.csv")
 recipe_states = {}
 RATING_REACTIONS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']
 
 
 # Function to recommend a recipe
 async def recommend_recipe(message, recipe_id: int):
-    if recipe_id == -1:     # random recipe
+    if recipe_id == -1:  # random recipe
         rand_id = random.randint(0, len(recipes_df))
         recipe_id = recipes_df.iloc[rand_id].id
 
@@ -28,8 +28,9 @@ async def recommend_recipe(message, recipe_id: int):
             f"**Description:**\n{recipe['description']} 📖\n\n"
             f"**Time to cook:** {recipe['minutes']} minutes ⏲️\n\n"
             f"**Ingredients:** 🛒\n" + '\n'.join([f"- {i}" for i in eval(recipe['ingredients_tags'])]) + "\n\n"
-            f"**Steps:** 👩‍🍳\n" + '\n'.join([f"{i + 1}. {s}" for i, s in enumerate(eval(recipe['steps']))]) + "\n\n"
-            "Please accept or reject this recipe:"
+                                                                                                        f"**Steps:** 👩‍🍳\n" + '\n'.join(
+        [f"{i + 1}. {s}" for i, s in enumerate(eval(recipe['steps']))]) + "\n\n"
+                                                                          "Please accept or reject this recipe:"
     )
 
     recipe_states[message.id] = {
