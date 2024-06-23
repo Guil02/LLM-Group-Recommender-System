@@ -13,10 +13,9 @@ class ChatModule(GrsModule):
     async def execute_module(self, bot: Client, *args, **kwargs):
         print('Chat module is running')
         chat_data: ChatData = kwargs['chat_data']
-
+        tags = ['test1', 'test2', 'test3']
         # TODO add pca selection of categories
-        while not chat_data.get_finished():
-            tag = 'test'  # TODO create tag selection
+        for tag in tags:
             rating = TagRating(chat_data)
             chat_data = await rating.send_rating(tag)
             del rating
