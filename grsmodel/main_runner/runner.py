@@ -70,7 +70,8 @@ async def on_message(message: Message) -> None:
         current_mode = module_modes[1]
         logging.info(f'Current mode: {current_mode}')
         module = module_creator.factory(current_mode)
-        chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data)
+        chat_data = await module.execute_module(client, message, gemini=gemini, chat_data=chat_data,
+                                                aggregation_method='average')
 
         current_mode = module_modes[2]
         logging.info(f'Current mode: {current_mode}')

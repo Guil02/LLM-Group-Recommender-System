@@ -8,6 +8,7 @@ class ChatData:
         self.finished = False
         self.channel = None
         self.manual_tag_collect_stop = False
+        self.recommended_recipes = []
 
     def add_tag(self, user_id, tag, rating):
         if user_id not in self.collected_tags:
@@ -16,6 +17,12 @@ class ChatData:
 
     def get_tag(self, user_id, tag):
         return self.collected_tags.get(user_id, {}).get(tag, 0)
+
+    def get_tags(self, user_id):
+        return self.collected_tags.get(user_id, {})
+
+    def get_all_tags(self):
+        return self.collected_tags
 
     def get_finished(self):
         return self.finished
@@ -31,3 +38,9 @@ class ChatData:
 
     def get_manual_tag_collect_stop(self):
         return self.manual_tag_collect_stop
+
+    def get_recommended_recipes(self):
+        return self.recommended_recipes
+
+    def set_recommended_recipes(self, recipes):
+        self.recommended_recipes = recipes
