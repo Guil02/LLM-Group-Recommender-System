@@ -27,6 +27,9 @@ class ChatData:
     def get_finished(self):
         return self.finished
 
+    def set_finished(self, finished: bool):
+        self.finished = finished
+
     def set_channel(self, channel: discord.Message.channel):
         self.channel = channel
 

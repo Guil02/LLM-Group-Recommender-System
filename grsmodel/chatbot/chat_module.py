@@ -14,6 +14,8 @@ class ChatModule(GrsModule):
         print('Chat module is running')
         chat_data: ChatData = kwargs['chat_data']
         tags = ['test1', 'test2', 'test3']
+        special_tags = ['occasion', 'easy', 'main-dish', 'equipment', 'number-of-servings']
+
         # TODO add pca selection of categories
         for tag in tags:
             rating = TagRating(chat_data)
