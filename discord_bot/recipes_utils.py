@@ -1,15 +1,12 @@
 import random
 
-import pandas as pd
-from discord import Client
 import discord
-from discord.ext import commands
-from discord.ui import Button, View
+import pandas as pd
+from discord.ui import View
 
 # TODO: make sure this is added manually to the parent folder
 recipes_df = pd.read_csv("../cleaned_recipes_with_country.csv")
 recipe_states = {}
-RATING_REACTIONS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']
 
 
 # Function to recommend a recipe

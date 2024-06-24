@@ -2,7 +2,8 @@ import discord
 
 
 class ChatData:
-    def __init__(self):
+    def __init__(self, num_users=5):
+        self.num_users = num_users
         self.collected_tags = {}
         self.collected_tags_rate_count = {}
         self.finished = False

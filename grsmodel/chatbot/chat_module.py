@@ -5,7 +5,6 @@ from grsmodel.chatbot.gemini import Gemini
 from grsmodel.chatbot.tag_rating import TagRating
 import os
 
-
 class ChatModule(GrsModule):
     def __init__(self):
         super().__init__()

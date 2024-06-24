@@ -3,6 +3,7 @@ from grsmodel.module_factory.module_creator import ModuleCreator
 from discord import Intents, Client, Message, NotFound, Reaction, User
 from discord.ext import commands
 import os
+import re
 import logging
 from datetime import datetime
 from dotenv import load_dotenv
@@ -41,7 +42,6 @@ module_modes = ['chat', 'aggregation', 'recommendation']
 module: GrsModule = None
 module_creator: ModuleCreator = ModuleCreator()
 current_mode = 'chat'
-chat_data = ChatData()
 
 
 @client.event
@@ -58,9 +58,20 @@ async def on_message(message: Message) -> None:
     if not user_message.startswith('!startGRS'):
         return
 
+    # Extract the number of users after '!startGRS-' if it exists
+    match = re.match(r'!startGRS-(\d+)', user_message)
+    num_users = int(match.group(1)) if match else None
+
+    if num_users is not None:
+        logging.info(f'Setting number of users: {num_users}')
+        chat_data = ChatData(num_users)
+    else:
+        logging.info(f'Setting default number of users: 5')
+        chat_data = ChatData()
+
     global module
     global current_mode
-    global chat_data
+
     chat_data.set_channel(message.channel)
 
     done = False
