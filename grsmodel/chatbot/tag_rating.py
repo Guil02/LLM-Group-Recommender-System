@@ -50,10 +50,10 @@ class TagRating(View):
         current_value = self.chat_data.get_tag(user_id, self.tag)
         if current_value == 0:
             self.chat_data.add_tag(user_id, self.tag, rating)
-            self.chat_data.collected_tags_rate_count[user_id] = {}
+            if user_id not in self.chat_data.collected_tags_rate_count:
+                self.chat_data.collected_tags_rate_count[user_id] = {}
             self.chat_data.collected_tags_rate_count[user_id][self.tag] = 1
         else:
-
             self.chat_data.collected_tags_rate_count[user_id][self.tag] += 1
             self.chat_data.add_tag(user_id, self.tag,
                                    (current_value * (self.chat_data.collected_tags_rate_count[user_id][
@@ -62,12 +62,12 @@ class TagRating(View):
                                        self.tag])
 
         self.user_rated[user_id] = 1
-        
+
         await self.msg.edit(content=f'How would you rate the tag {self.tag}? be careful, you cannot change your answer.'
-                                    f'\n {self.evaluated_count()}/{self.member_count} have rated so far',
+                                    f'\n {self.evaluated_count()}/{self.chat_data.get_num_users()} have rated so far',
                             view=self)
 
-        if self.evaluated_count() == self.member_count:
+        if self.evaluated_count() == self.chat_data.get_num_users():
             await self.msg.edit(content='Thank you for your ratings!', view=None)
             self.stop()
         else:
@@ -75,7 +75,6 @@ class TagRating(View):
 
     async def send_rating(self, tag: str):
         self.tag = tag
-        self.member_count = len(self.chat_data.get_channel().members)
 
         self.msg: discord.Message = await (self.chat_data
                                            .get_channel()

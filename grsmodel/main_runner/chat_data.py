@@ -48,3 +48,6 @@ class ChatData:
 
     def set_recommended_recipes(self, recipes):
         self.recommended_recipes = recipes
+
+    def get_num_users(self):
+        return self.num_users
