@@ -47,7 +47,7 @@ class AggregationModule(GrsModule):
         recommendations = dict(recommendations)
 
         # Generate recommendations for the group based on similarity
-        group_vector = [recommendations.get(tag, 0) for tag in tag_dicts[recipe_ids[0]].keys()]
+        group_vector = [recommendations.get(tag, 0) for tag in tag_dicts.keys()]
         similarity_scores = compute_similarity(group_vector, recipe_tag_matrix)
         recommended_indices = np.argsort(similarity_scores)[::-1]       # Sort in descending order
         recommended_recipe_ids = [recipe_ids[idx] for idx in recommended_indices]
