@@ -11,6 +11,11 @@ class ChatData:
         self.manual_tag_collect_stop = False
         self.recommended_recipes = []
 
+        self.special_tags = ['occasion', 'easy', 'main-dish', 'equipment', 'number-of-servings']
+        self.time_tags = ['60-minutes-or-less', '30-minutes-or-less', '15-minutes-or-less', '1-day-or-more']
+        self.country_tags = ['north-american', 'european', 'asian', 'american', 'south-west-pacific']
+        self.dietary_tags = ['low-cholesterol', 'meat', 'vegetables', 'dietary', 'low-carb', 'pasta-rice-and-grains']
+
     def add_tag(self, user_id, tag, rating):
         if user_id not in self.collected_tags:
             self.collected_tags[user_id] = {}
@@ -51,3 +56,18 @@ class ChatData:
 
     def get_num_users(self):
         return self.num_users
+
+    def get_special_tags(self):
+        return self.special_tags
+
+    def get_time_tags(self):
+        return self.time_tags
+
+    def get_country_tags(self):
+        return self.country_tags
+
+    def get_dietary_tags(self):
+        return self.dietary_tags
+
+    def get_random_ingredient_tag(self):
+        pass

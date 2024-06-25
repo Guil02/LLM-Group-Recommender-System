@@ -5,6 +5,7 @@ from grsmodel.chatbot.gemini import Gemini
 from grsmodel.chatbot.tag_rating import TagRating
 import os
 
+
 class ChatModule(GrsModule):
     def __init__(self):
         super().__init__()
@@ -13,10 +14,12 @@ class ChatModule(GrsModule):
         print('Chat module is running')
         chat_data: ChatData = kwargs['chat_data']
         tags = ['test1', 'test2', 'test3']
-        special_tags = ['occasion', 'easy', 'main-dish', 'equipment', 'number-of-servings']
-
+        special_tags = chat_data.special_tags
+        time_tags = chat_data.time_tags
+        country_tags = chat_data.country_tags
+        dietary_tags = chat_data.dietary_tags
         # TODO add pca selection of categories
-        for tag in tags:
+        for tag in country_tags:
             rating = TagRating(chat_data)
             chat_data = await rating.send_rating(tag)
             del rating
