@@ -5,7 +5,7 @@ import pandas as pd
 from discord.ui import View
 
 # TODO: make sure this is added manually to the parent folder
-recipes_df = pd.read_csv("../cleaned_recipes_with_country.csv")
+recipes_df = pd.read_csv("../grsmodel/main_runner/cleaned_recipes_with_country.csv")
 recipe_states = {}
 
 

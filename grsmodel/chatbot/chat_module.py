@@ -18,6 +18,7 @@ class ChatModule(GrsModule):
         time_tags = chat_data.time_tags
         country_tags = chat_data.country_tags
         dietary_tags = chat_data.dietary_tags
+
         # TODO add pca selection of categories
         for tag in country_tags:
             rating = TagRating(chat_data)

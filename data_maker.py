@@ -8,7 +8,7 @@ import pickle
 
 
 def execute_module():
-    recipes = pd.read_csv('cleaned_recipes.csv')
+    recipes = pd.read_csv('grsmodel/main_runner/cleaned_recipes.csv')
     # Convert the recipe tags to a DataFrame
     recipe_tag_matrix = []
     recipe_ids = []
@@ -52,7 +52,7 @@ def execute_module():
 
 def execute_module_1():
     print("Loading data...")
-    recipes = pd.read_csv('cleaned_recipes_with_country.csv')
+    recipes = pd.read_csv('grsmodel/main_runner/cleaned_recipes_with_country.csv')
 
     # Define a function to extract and clean tags from a column
     def extract_tags(tags):
@@ -63,7 +63,7 @@ def execute_module_1():
                   extract_tags(row['country_tags']) + \
                   extract_tags(row['dietary_tags']) + \
                   extract_tags(row['special_tags'])
-#          + \        extract_tags(row['ingredients_tags'])
+        #          + \        extract_tags(row['ingredients_tags'])
         return new_row
 
     # Apply the function to each tag column and combine all tags into one list

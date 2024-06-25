@@ -7,6 +7,7 @@ from discord import Client
 
 recipe_states = {}
 
+
 class RecommendationModule(GrsModule):
 
     def __init__(self):
@@ -15,7 +16,7 @@ class RecommendationModule(GrsModule):
         self.chat_data = None
         self.message = None
 
-    def execute_module(self, bot: Client, *args, **kwargs):
+    async def execute_module(self, bot: Client, *args, **kwargs):
         """
         Executes the process of a recipe recommendation.
 
@@ -31,30 +32,34 @@ class RecommendationModule(GrsModule):
         """
         self.message = kwargs.get('message')
         self.chat_data = kwargs.get('chat_data')
-
         self.num_users = self.chat_data.num_users
 
+        recipes = self.chat_data.recipes
         recipe_recommended = self.chat_data.get_recommended_recipes()[0]
+        recipe = recipes.loc[recipes['id'] == recipe_recommended, :]
+        print(recipe)
         approval_view = ApprovalView(self.message.id, self)
         recipe_states[self.message.id] = {
-            'recipe_id': recipe_recommended['id'],
+            'recipe_id': recipe['id'],
             'approved': False,
             'ratings': {str(i): 0 for i in range(1, 6)},
             'voters': {},
             'approval_view': approval_view,
         }
 
-        chat_data = self.recommend_recipe(recipe_recommended, approval_view)
+        chat_data = await (
+            self.recommend_recipe(recipe, approval_view))
         return chat_data
 
     async def recommend_recipe(self, recipe, view):
         details = (
-            f"**{recipe['name']}** 🍽️\n\n"
-            f"**Description:**\n{recipe['description']} 📖\n\n"
-            f"**Time to cook:** {recipe['minutes']} minutes ⏲️\n\n"
-            f"**Ingredients:** 🛒\n" + '\n'.join([f"- {i}" for i in eval(recipe['ingredients_tags'])]) + "\n\n"
-            f"**Steps:** 👩‍🍳\n" + '\n'.join([f"{i + 1}. {s}" for i, s in enumerate(eval(recipe['steps']))]) + "\n\n"
-            "Please accept or reject this recipe:"
+                f"**{recipe['name']}** 🍽️\n\n"
+                f"**Description:**\n{recipe['description']} 📖\n\n"
+                f"**Time to cook:** {recipe['minutes']} minutes ⏲️\n\n"
+                f"**Ingredients:** 🛒\n" + '\n'.join([f"- {i}" for i in eval(recipe['ingredients_tags'])]) + "\n\n"
+                                                                                                            f"**Steps:** 👩‍🍳\n" + '\n'.join(
+            [f"{i + 1}. {s}" for i, s in enumerate(eval(recipe['steps']))]) + "\n\n"
+                                                                              "Please accept or reject this recipe:"
         )
 
         await self.message.channel.send(details, view=view)
@@ -71,14 +76,16 @@ class RecommendationModule(GrsModule):
         if state:
             rating_view = RatingView(self.message.id, self)
             state['approval_view'] = rating_view
-            await state['approval_view'].message.channel.send("The recipe has been accepted. Please rate the recipe.", view=rating_view)
+            await state['approval_view'].message.channel.send("The recipe has been accepted. Please rate the recipe.",
+                                                              view=rating_view)
 
     async def finalize_ratings(self):
         state = recipe_states.get(self.message.id)
         if state:
             total_ratings = sum(state['ratings'].values())
             avg_rating = sum(int(key) * value for key, value in state['ratings'].items()) / total_ratings
-            await state['approval_view'].message.channel.send(f"The recipe has been accepted with an average rating of {avg_rating:.2f} stars based on {total_ratings} ratings.")
+            await state['approval_view'].message.channel.send(
+                f"The recipe has been accepted with an average rating of {avg_rating:.2f} stars based on {total_ratings} ratings.")
             self.chat_data.set_finished(True)
             del recipe_states[self.message.id]
 
@@ -101,7 +108,8 @@ class ApprovalView(View):
             await interaction.response.send_message("Thank you for your approval!", ephemeral=True)
             await self.module.handle_acceptance(self.message_id)
         else:
-            await interaction.response.send_message(f"Approval received ({self.approve_count}/{self.module.num_users}).", ephemeral=True)
+            await interaction.response.send_message(
+                f"Approval received ({self.approve_count}/{self.module.num_users}).", ephemeral=True)
 
     @discord.ui.button(label="Reject", style=discord.ButtonStyle.danger, custom_id="reject")
     async def reject_button(self, interaction: discord.Interaction, button: discord.ui.Button):

@@ -3,31 +3,6 @@ import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
-def preload():
-    def extract_tags(tags):
-        return [tag.strip() for tag in eval(tags) if tag.strip()]
-
-    def row_function(row):
-        new_row = extract_tags(row['time_tags']) + \
-                  extract_tags(row['country_tags']) + \
-                  extract_tags(row['dietary_tags']) + \
-                  extract_tags(row['special_tags'])
-        #          + \        extract_tags(row['ingredients_tags'])
-        return new_row
-
-    recipes = pd.read_csv('cleaned_recipes_with_country.csv')
-    recipes['all_tags'] = recipes.apply(row_function, axis=1)
-
-    mlb = MultiLabelBinarizer()
-    recipe_tag_matrix = mlb.fit_transform(recipes['all_tags'])
-
-    tag_dicts = {}
-    for i, recipe_id in enumerate(recipes['id']):
-        tag_dicts[recipe_id] = {tag: int(recipe_tag_matrix[i, j]) for j, tag in enumerate(mlb.classes_)}
-
-    return tag_dicts
-
-
 class ChatData:
     def __init__(self, num_users=5):
         self.num_users = num_users
@@ -43,7 +18,7 @@ class ChatData:
         self.country_tags = ['north-american', 'european', 'asian', 'american', 'south-west-pacific']
         self.dietary_tags = ['low-cholesterol', 'meat', 'vegetables', 'dietary', 'low-carb', 'pasta-rice-and-grains']
 
-        self.recipe_tag_matrix = preload()
+        self.recipe_tag_matrix = self.preload()
 
     def add_tag(self, user_id, tag, rating):
         if user_id not in self.collected_tags:
@@ -59,7 +34,7 @@ class ChatData:
     def get_all_tags(self):
         return self.collected_tags
 
-    def get_finished(self):
+    async def get_finished(self):
         return self.finished
 
     def set_finished(self, finished: bool):
@@ -103,3 +78,27 @@ class ChatData:
 
     def get_tag_matrix(self):
         return self.recipe_tag_matrix
+
+    def preload(self):
+        def extract_tags(tags):
+            return [tag.strip() for tag in eval(tags) if tag.strip()]
+
+        def row_function(row):
+            new_row = extract_tags(row['time_tags']) + \
+                      extract_tags(row['country_tags']) + \
+                      extract_tags(row['dietary_tags']) + \
+                      extract_tags(row['special_tags'])
+            #          + \        extract_tags(row['ingredients_tags'])
+            return new_row
+
+        self.recipes = pd.read_csv('cleaned_recipes_with_country.csv')
+        self.recipes['all_tags'] = self.recipes.apply(row_function, axis=1)
+
+        mlb = MultiLabelBinarizer()
+        recipe_tag_matrix = mlb.fit_transform(self.recipes['all_tags'])
+
+        tag_dicts = {}
+        for i, recipe_id in enumerate(self.recipes['id']):
+            tag_dicts[recipe_id] = {tag: int(recipe_tag_matrix[i, j]) for j, tag in enumerate(mlb.classes_)}
+
+        return tag_dicts

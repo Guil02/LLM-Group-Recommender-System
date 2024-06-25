@@ -13,9 +13,9 @@ class AggregationModule(GrsModule):
     def __init__(self):
         super().__init__()
 
-    def execute_module(self, bot: Client, *args, **kwargs):
-        recipes = pd.read_csv('cleaned_recipes.csv')
-        user_tags = kwargs['chat_data'].get_all_tags()
+    async def execute_module(self, bot: Client, *args, **kwargs):
+        chat_data = kwargs['chat_data']
+        user_tags = chat_data.get_all_tags()
         agg_method = kwargs['aggregation_method']
 
         group_preferences = []
@@ -34,14 +34,14 @@ class AggregationModule(GrsModule):
         else:
             raise ValueError(f'Invalid aggregation method: {agg_method}')
 
-        tag_dicts = kwargs['chat_data'].get_tag_matrix()
+        tag_dicts = chat_data.get_tag_matrix()
         recipe_ids = tag_dicts.keys()
         recipe_tag_matrix = np.array([list(tag_dicts[recipe_id].values()) for recipe_id in recipe_ids])
 
         # Compute similarity scores between group tags and recipes
         def compute_similarity(gv, recipe_matrix):
             gv = np.array(gv).reshape(1, -1)
-            sim_scores = cosine_similarity(gv, recipe_matrix)
+            sim_scores = cosine_similarity(gv, recipe_matrix.T)
             return sim_scores.flatten()
 
         recommendations = dict(recommendations)
@@ -49,8 +49,8 @@ class AggregationModule(GrsModule):
         # Generate recommendations for the group based on similarity
         group_vector = [recommendations.get(tag, 0) for tag in tag_dicts.keys()]
         similarity_scores = compute_similarity(group_vector, recipe_tag_matrix)
-        recommended_indices = np.argsort(similarity_scores)[::-1]       # Sort in descending order
-        recommended_recipe_ids = [recipe_ids[idx] for idx in recommended_indices]
+        recommended_indices = np.argsort(similarity_scores)[::-1]  # Sort in descending order
+        # recommended_recipe_ids = [recipe_ids[idx] for idx in recommended_indices]
 
-        kwargs['chat_data'].set_recommended_recipes(recommended_recipe_ids[:3])     # best three
-        return kwargs['chat_data']
+        chat_data.set_recommended_recipes(recommended_indices[:3])  # best three
+        return chat_data
