@@ -87,18 +87,16 @@ class TagRating(View):
         ratings = self.chat_data.get_tag_ratings(tag)
         tag_length = len(tag)
         rating_length = self.chat_data.get_num_users()
+        spaces_count = max_length - tag_length - rating_length
+        spaces = ' ' * spaces_count
 
-        response_lines = []
+        ratings_str = ''
+
         for user_id, rating in ratings.items():
-            rating_emj = rating_emojis.get(rating, '❓')     # Default to question mark if rating is not 1-5
+            rating_emj = rating_emojis.get(rating, '❓')    # Default to question mark if rating is not 1-5
+            ratings_str += rating_emj
 
-            # Calculate spaces to align ratings to the right
-            spaces_count = max_length - tag_length - rating_length
-            spaces = ' ' * spaces_count
-            response_line = f"{tag}:{spaces}{rating_emj}"
-            response_lines.append(response_line)
-
-        return f"{tag}:             {''.join(response_lines)}"
+        return f"{tag}:{spaces}{ratings_str}"
 
     async def send_rating(self, tag: str):
         self.tag = tag
