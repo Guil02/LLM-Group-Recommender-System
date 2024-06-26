@@ -120,6 +120,7 @@ class ChatData:
         country = self.recipes['country_tags'].apply(ast.literal_eval).explode().unique()
         special = self.recipes['special_tags'].apply(ast.literal_eval).explode().unique()
         dietary = self.recipes['dietary_tags'].apply(ast.literal_eval).explode().unique()
+        time = self.recipes['time_tags'].apply(ast.literal_eval).explode().unique()
         for tag in tags:
             if tag in country:
                 self.country_tags.appendleft(tag)
@@ -127,6 +128,8 @@ class ChatData:
                 self.special_tags.appendleft(tag)
             elif tag in dietary:
                 self.dietary_tags.appendleft(tag)
+            elif tag in time:
+                continue
             else:
                 self.chosen_tags.append(tag)
 

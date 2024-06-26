@@ -36,16 +36,17 @@ class TagQuestioning(View):
             if not done:
                 suggestions.append(msg.content)
 
-        chosen_tags = []
-        query = '\n '.join(suggestions)
+        if len(suggestions) > 0:
+            chosen_tags = []
+            query = '\n '.join(suggestions)
 
-        gemini_query = ('the users sent us all these messages: ' + query +
-                        ' these are all the possible tags: ' + str(unique_tags) +
-                        'please retrieve from the possible which ones are mentioned in the user\'s message'
-                        'and return them in the following format [\'tag1\', \'tag2\', \'tag3\'] please only return'
-                        'this list and nothing else. keep the list simple')
+            gemini_query = ('the users sent us all these messages: ' + query +
+                            ' these are all the possible tags: ' + str(unique_tags) +
+                            'please retrieve from the possible which ones are mentioned in the user\'s message'
+                            'and return them in the following format [\'tag1\', \'tag2\', \'tag3\'] please only return'
+                            'this list and nothing else. keep the list simple')
 
-        results = self.gemini.generate_text(gemini_query)
-        chosen_tags.extend(extract_tag_list_re(results))
-        self.chat_data.add_chosen_tags(chosen_tags)
+            results = self.gemini.generate_text(gemini_query)
+            chosen_tags.extend(extract_tag_list_re(results))
+            self.chat_data.add_chosen_tags(chosen_tags)
         return self.chat_data

@@ -82,7 +82,7 @@ class TagRating(View):
         else:
             await interaction.response.defer()
 
-    async def generate_end_response(self) -> str:
+    def generate_end_response(self) -> str:
         tag = self.tag
         ratings = self.chat_data.get_tag_ratings(tag)
         tag_length = len(tag)
