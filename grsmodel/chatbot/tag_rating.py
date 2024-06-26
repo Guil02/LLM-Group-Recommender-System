@@ -81,13 +81,13 @@ class TagRating(View):
         else:
             await interaction.response.defer()
 
-    async def generate_end_response(self) -> str:
+    def generate_end_response(self) -> str:
         tag = self.tag
         ratings = self.chat_data.get_tag_ratings(tag)
 
         response_lines = []
         for user_id, rating in ratings.items():
-            rating = rating_emojis.get(rating, '❓')     # Default to question mark if rating is not 1-5
+            rating = rating_emojis.get(rating, '❓')  # Default to question mark if rating is not 1-5
             response_lines.append(rating)
 
         return f"{tag}:             {''.join(response_lines)}"
