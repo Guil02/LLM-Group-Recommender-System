@@ -4,7 +4,8 @@ import openai
 
 api_key = ""
 
-def average_recommendation(preference_list,max_tags=10):
+
+def average_recommendation(preference_list, max_tags=10):
     item_totals = {}
     item_counts = {}
 
@@ -17,12 +18,14 @@ def average_recommendation(preference_list,max_tags=10):
                 item_totals[item] = score
                 item_counts[item] = 1
 
-    average_scores = {item: item_totals[item] / item_counts[item] for item in item_totals if item_totals[item] / item_counts[item] >= MIN_SCORE}
+    average_scores = {item: item_totals[item] / item_counts[item] for item in item_totals if
+                      item_totals[item] / item_counts[item] >= MIN_SCORE}
     recommended_items = sorted(average_scores.items(), key=lambda x: x[1], reverse=True)
     recommended_items = recommended_items[0:max_tags]
     return recommended_items
 
-def least_misery_recommendation(preference_list,max_tags=10):
+
+def least_misery_recommendation(preference_list, max_tags=10):
     item_min_scores = {}
 
     for preferences in preference_list:
@@ -33,11 +36,12 @@ def least_misery_recommendation(preference_list,max_tags=10):
                 item_min_scores[item] = score
 
     recommended_items = {item: score for item, score in item_min_scores.items() if score >= MIN_SCORE}
-    recommended_items=  sorted(recommended_items.items(), key=lambda x: x[1], reverse=True)[0:max_tags]
+    recommended_items = sorted(recommended_items.items(), key=lambda x: x[1], reverse=True)[0:max_tags]
 
     return recommended_items
 
-def most_pleasure_recommendation(preference_list,max_tags=10):
+
+def most_pleasure_recommendation(preference_list, max_tags=10):
     item_max_scores = {}
 
     for preferences in preference_list:
@@ -52,7 +56,8 @@ def most_pleasure_recommendation(preference_list,max_tags=10):
 
     return recommended_items
 
-def openai_recommendation(preference_list, max_tags=10,api_key=api_key):
+
+def openai_recommendation(preference_list, max_tags=10, api_key=api_key):
     openai.api_key = api_key
 
     def construct_prompt(preference_list, max_tags):
@@ -72,8 +77,8 @@ def openai_recommendation(preference_list, max_tags=10,api_key=api_key):
 
     prompt = construct_prompt(preference_list, max_tags)
     response = openai.chat.completions.create(
-        model= "gpt-3.5-turbo",
-        messages=[{"role": "system", "content": "You are a helpful assistant."}, 
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "You are a helpful assistant."},
                   {"role": "user", "content": prompt}]
     )
     return response.choices[0].message.content.strip()

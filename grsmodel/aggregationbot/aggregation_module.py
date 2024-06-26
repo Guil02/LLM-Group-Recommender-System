@@ -1,7 +1,10 @@
+import os
+
 from grsmodel.main_runner.grs_module import GrsModule
 from discord import Client
 import recommender
 from sklearn.metrics.pairwise import cosine_similarity
+import ast
 import pickle
 
 import numpy as np
@@ -30,7 +33,7 @@ class AggregationModule(GrsModule):
         elif agg_method == 'most_pleasure':
             recommendations = recommender.most_pleasure_recommendation(group_preferences)
         elif agg_method == 'llm':
-            recommendations = recommender.openai_recommendation(group_preferences)
+            recommendations = recommender.openai_recommendation(group_preferences, api_key=os.getenv('OPEN_AI_API_KEY'))
         else:
             raise ValueError(f'Invalid aggregation method: {agg_method}')
 
@@ -42,7 +45,7 @@ class AggregationModule(GrsModule):
         tag_matrix = np.array([[tag_dicts[recipe_id].get(tag, 0) for tag in all_tags] for recipe_id in recipe_ids])
 
         # Convert recommendations to a dictionary for easy lookup
-        recommendations_dict = dict(recommendations)
+        recommendations_dict = dict(ast.literal_eval(recommendations))
 
         # Generate the group vector based on the recommendations
         group_vector = [recommendations_dict.get(tag, 0) for tag in all_tags]
