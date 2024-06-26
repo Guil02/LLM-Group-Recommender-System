@@ -10,7 +10,7 @@ rating_emojis = {
     4: '4️⃣',
     5: '5️⃣'
 }
-max_length = 100
+max_length = 50
 
 
 class TagRating(View):
@@ -76,7 +76,7 @@ class TagRating(View):
                                     f'\n {self.evaluated_count()}/{self.chat_data.get_num_users()} have rated so far',
                             view=self)
 
-        if self.evaluated_count() == self.chat_data.get_num_users():
+        if self.evaluated_count() >= self.chat_data.get_num_users():
             await self.msg.edit(content=self.generate_end_response(), view=None)
             self.stop()
         else:
@@ -93,7 +93,7 @@ class TagRating(View):
         ratings_str = ''
 
         for user_id, rating in ratings.items():
-            rating_emj = rating_emojis.get(rating, '❓')    # Default to question mark if rating is not 1-5
+            rating_emj = rating_emojis.get(rating, '❓')  # Default to question mark if rating is not 1-5
             ratings_str += rating_emj
 
         return f"{tag}:{spaces}{ratings_str}"

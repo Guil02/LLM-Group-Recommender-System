@@ -75,7 +75,7 @@ class TimeTagRating(View):
         await self.msg.edit(content=f'What is your preferred tag? be careful, you cannot change your answer.'
                                     f'\n {self.evaluated_count()}/{self.chat_data.get_num_users()} have rated so far',
                             view=self)
-        if self.evaluated_count() == self.chat_data.get_num_users():
+        if self.evaluated_count() >= self.chat_data.get_num_users():
             await self.msg.edit(content='Thank you for your ratings!', view=None)
             self.stop()
         else:

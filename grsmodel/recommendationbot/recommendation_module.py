@@ -140,7 +140,7 @@ class ApprovalView(View):
         user_id = interaction.user.id
         rm = interaction.message
 
-        if state['user_responses'][user_id] is None:  # User hasn't responded yet
+        if state['user_responses'].get(user_id, None) is None:  # User hasn't responded yet
             state['user_responses'][user_id] = False
 
             await rm.edit(content="Thank you for your feedback! The recipe will be reconsidered.", view=None)
