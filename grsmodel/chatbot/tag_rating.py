@@ -3,6 +3,14 @@ import discord
 
 from grsmodel.main_runner.chat_data import ChatData
 
+rating_emojis = {
+    1: '1️⃣',
+    2: '2️⃣',
+    3: '3️⃣',
+    4: '4️⃣',
+    5: '5️⃣'
+}
+
 
 class TagRating(View):
     def __init__(self, chat_data: ChatData):
@@ -76,6 +84,13 @@ class TagRating(View):
     async def generate_end_response(self) -> str:
         tag = self.tag
         ratings = self.chat_data.get_tag_ratings(tag)
+
+        response_lines = []
+        for user_id, rating in ratings.items():
+            rating_emojis.get(rating, '❓')  # Default to question mark if rating is not 1-5
+            response_lines.append(rating_emojis)
+
+        return f"{tag}:             {''.join(response_lines)}"
 
     async def send_rating(self, tag: str):
         self.tag = tag
