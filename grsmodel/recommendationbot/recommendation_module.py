@@ -55,6 +55,8 @@ class RecommendationModule(GrsModule):
     async def recommend_recipe(self, message, recipe, view):
         ingredients = [f"{i}. {ing}" for i, ing in enumerate(recipe['ingredients_tags'])]
         steps = [f"{i}. {step}" for i, step in enumerate(recipe['steps'])]
+
+        # Construct the details message
         details = (
                 f"**Name:**\n{recipe['name']}** 🍽️\n\n"
                 f"**Description:**\n{recipe['description'].iloc[0]} 📖\n\n"
@@ -64,7 +66,12 @@ class RecommendationModule(GrsModule):
                 "Please accept or reject this recipe:"
         )
 
-        await message.channel.send(details, view=view)
+        # Split the details message into chunks of 2000 characters each
+        chunks = [details[i:i + 2000] for i in range(0, len(details), 2000)]
+
+        # Send each chunk as a separate message
+        for chunk in chunks:
+            await message.channel.send(chunk, view=view)
 
     async def handle_rejection(self, message_id):
         state = recipe_states.get(message_id)
