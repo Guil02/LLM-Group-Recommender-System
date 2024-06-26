@@ -35,22 +35,27 @@ class AggregationModule(GrsModule):
             raise ValueError(f'Invalid aggregation method: {agg_method}')
 
         tag_dicts = chat_data.get_tag_matrix()
-        recipe_ids = tag_dicts.keys()
-        recipe_tag_matrix = np.array([list(tag_dicts[recipe_id].values()) for recipe_id in recipe_ids])
+        recipe_ids = list(tag_dicts.keys())
+        all_tags = list(tag_dicts[next(iter(recipe_ids))].keys())  # Get the list of all tags
 
-        # Compute similarity scores between group tags and recipes
-        def compute_similarity(gv, recipe_matrix):
-            gv = np.array(gv).reshape(1, -1)
-            sim_scores = cosine_similarity(gv, recipe_matrix.T)
-            return sim_scores.flatten()
+        # Create the recipe tag matrix
+        tag_matrix = np.array([[tag_dicts[recipe_id].get(tag, 0) for tag in all_tags] for recipe_id in recipe_ids])
 
-        recommendations = dict(recommendations)
+        # Convert recommendations to a dictionary for easy lookup
+        recommendations_dict = dict(recommendations)
 
-        # Generate recommendations for the group based on similarity
-        group_vector = [recommendations.get(tag, 0) for tag in tag_dicts.keys()]
-        similarity_scores = compute_similarity(group_vector, recipe_tag_matrix)
-        recommended_indices = np.argsort(similarity_scores)[::-1]  # Sort in descending order
-        # recommended_recipe_ids = [recipe_ids[idx] for idx in recommended_indices]
+        # Generate the group vector based on the recommendations
+        group_vector = [recommendations_dict.get(tag, 0) for tag in all_tags]
 
-        chat_data.set_recommended_recipes(recommended_indices[:3])  # best three
+        # Compute similarity scores between the group vector and recipe tag matrix
+        group_vector = np.array(group_vector).reshape(1, -1)
+        similarity_scores = cosine_similarity(group_vector, tag_matrix).flatten()
+
+        # Get the indices of the top recipes sorted by similarity scores in descending order
+        recommended_indices = np.argsort(similarity_scores)[::-1]
+
+        # Set the top 3 recommended recipe IDs in chat_data
+        top_recommended_recipe_ids = [recipe_ids[idx] for idx in recommended_indices[:3]]
+        chat_data.set_recommended_recipes(top_recommended_recipe_ids)
+
         return chat_data

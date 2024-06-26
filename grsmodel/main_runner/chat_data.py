@@ -14,6 +14,7 @@ class ChatData:
         self.channel = None
         self.manual_tag_collect_stop = False
         self.recommended_recipes = []
+        self.recipes = None
 
         self.special_tags = deque(['occasion', 'easy', 'main-dish'], maxlen=3)
         self.time_tags = ['60-minutes-or-less', '30-minutes-or-less', '15-minutes-or-less', '1-day-or-more']
