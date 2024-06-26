@@ -86,15 +86,15 @@ class TagRating(View):
         tag = self.tag
         ratings = self.chat_data.get_tag_ratings(tag)
         tag_length = len(tag)
-        rating_length = self.chat_data.get_num_users()
-        spaces_count = max_length - tag_length - rating_length
-        spaces = ' ' * spaces_count
-
         ratings_str = ''
 
         for user_id, rating in ratings.items():
-            rating_emj = rating_emojis.get(rating, '❓')  # Default to question mark if rating is not 1-5
+            rating_emj = rating_emojis.get(rating, '❓')    # Default to question mark if rating is not 1-5
             ratings_str += rating_emj
+
+        rating_length = len(ratings_str)
+        spaces_count = max_length - tag_length - rating_length
+        spaces = ' ' * spaces_count
 
         return f"{tag}:{spaces}{ratings_str}"
 

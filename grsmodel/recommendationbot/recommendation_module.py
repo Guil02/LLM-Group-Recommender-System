@@ -62,8 +62,8 @@ class RecommendationModule(GrsModule):
                 f"**Description:**\n{recipe['description'].iloc[0]} 📖\n\n"
                 f"**Time to cook:** {recipe['minutes'].iloc[0]} minutes ⏲️\n\n"
                 f"**Ingredients:** 🛒\n" + '\n'.join(ingredients) + "\n\n"
-                                                                   f"**Steps:** 👩‍🍳\n" + '\n'.join(steps) + "\n\n"
-                                                                                                            "Please accept or reject this recipe:"
+                f"**Steps:** 👩‍🍳\n" + '\n'.join(steps) + "\n\n"
+                "Please accept or reject this recipe:"
         )
 
         # Split the details message into chunks of 2000 characters each
