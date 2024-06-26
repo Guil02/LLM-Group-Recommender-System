@@ -44,9 +44,10 @@ class TagQuestioning(View):
                             ' these are all the possible tags: ' + str(unique_tags) +
                             'please retrieve from the possible which ones are mentioned in the user\'s message'
                             'and return them in the following format [\'tag1\', \'tag2\', \'tag3\'] please only return'
-                            'this list and nothing else. keep the list simple')
+                            'this list and nothing else. keep the list simple, no more than 5 tags.')
 
             results = self.gemini.generate_text(gemini_query)
             chosen_tags.extend(extract_tag_list_re(results))
+            print(chosen_tags)
             self.chat_data.add_chosen_tags(chosen_tags)
         return self.chat_data
