@@ -70,8 +70,11 @@ class RecommendationModule(GrsModule):
         chunks = [details[i:i + 2000] for i in range(0, len(details), 2000)]
 
         # Send each chunk as a separate message
-        for chunk in chunks:
-            await message.channel.send(chunk, view=view)
+        for idx, chunk in enumerate(chunks):
+            if idx == len(chunks) - 1:
+                await message.channel.send(chunk, view=view)
+            else:
+                await message.channel.send(chunk, view=None)
 
     async def handle_rejection(self, message_id):
         state = recipe_states.get(message_id)
