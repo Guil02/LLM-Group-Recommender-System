@@ -29,7 +29,6 @@ class RecommendationModule(GrsModule):
             print(f'RECOMMENDING RECIPE {recipe_recommended}')
             recipe = recipes.loc[recipes['id'] == recipe_recommended, :]
 
-            print('CREATING APPROVAL VIEW')
             approval_view = ApprovalView(message, self)
             recipe_states[message.id] = {
                 'recipe_id': recipe['id'],  # Accessing the ID from the pandas DataFrame
@@ -37,14 +36,13 @@ class RecommendationModule(GrsModule):
                 'ratings': {str(i): 0 for i in range(1, 6)},
                 'voters': {},
                 'approval_view': approval_view,
+                'user_responses': {user_id: None for user_id in range(1, self.num_users + 1)},
             }
 
-            print('BEFORE LOCK')
             async with self.lock:
                 await self.recommend_recipe(message, recipe, approval_view)
                 await self.lock.acquire()
 
-            print('AFTER LOCK')
             if recipe_states[message.id]['approved']:  # Recipe was accepted
                 self.chat_data.set_finished(True)
                 return self.chat_data
@@ -114,23 +112,33 @@ class ApprovalView(View):
 
     @discord.ui.button(label="Approve", style=discord.ButtonStyle.success, custom_id="approve")
     async def approve_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.approve_count += 1
         state = recipe_states.get(self.message_id)
-        if self.approve_count >= self.module.num_users:
-            state['approved'] = True
-            await interaction.response.send_message("Thank you for your approval!", ephemeral=True)
-            await self.module.handle_acceptance(self.message_id)
-        else:
-            await interaction.response.send_message(
-                f"Approval received ({self.approve_count}/{self.module.num_users}).", ephemeral=True)
+        user_id = interaction.user.id
+        rm = interaction.message
+
+        if state['user_responses'][user_id] is None:  # User hasn't responded yet
+            state['user_responses'][user_id] = True
+            approve_count = sum(1 for response in state['user_responses'].values() if response is True)
+
+            if approve_count == self.module.num_users:
+                state['approved'] = True
+                await rm.edit(content="Thank you for your approval! All users have approved.", view=None)
+                await self.module.handle_acceptance(self.message_id)
+            else:
+                await rm.edit(content=f"Approval received ({approve_count}/{self.module.num_users}).", view=None)
 
     @discord.ui.button(label="Reject", style=discord.ButtonStyle.danger, custom_id="reject")
     async def reject_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.reject_count += 1
         state = recipe_states.get(self.message_id)
-        state['approved'] = False
-        await interaction.response.send_message("Thank you for your feedback!", ephemeral=True)
-        await self.module.handle_rejection(self.message_id)
+        user_id = interaction.user.id
+        rm = interaction.message
+
+        if state['user_responses'][user_id] is None:  # User hasn't responded yet
+            state['user_responses'][user_id] = False
+
+            await rm.edit(content="Thank you for your feedback! The recipe will be reconsidered.", view=None)
+
+            await self.module.handle_rejection(self.message_id)
 
 
 class RatingView(View):
@@ -184,7 +192,7 @@ class RatingView(View):
             else:
                 response_message = "Your rating has been updated!"
 
-            await interaction.response.send_message(f"{response_message}\n\n{rating_message}", ephemeral=True)
+            await interaction.message.edit(content=f"{response_message}\n\n{rating_message}", view=None)
 
             if total_ratings >= self.module.num_users:
                 await self.module.finalize_ratings(self.message_id)
