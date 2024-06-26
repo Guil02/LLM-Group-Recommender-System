@@ -1,6 +1,8 @@
 import discord
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
+from collections import deque
+import ast
 
 
 class ChatData:
@@ -13,12 +15,16 @@ class ChatData:
         self.manual_tag_collect_stop = False
         self.recommended_recipes = []
 
-        self.special_tags = ['occasion', 'easy', 'main-dish', 'equipment', 'number-of-servings']
+        self.special_tags = deque(['occasion', 'easy', 'main-dish'], maxlen=3)
         self.time_tags = ['60-minutes-or-less', '30-minutes-or-less', '15-minutes-or-less', '1-day-or-more']
-        self.country_tags = ['north-american', 'european', 'asian', 'american', 'south-west-pacific']
-        self.dietary_tags = ['low-cholesterol', 'meat', 'vegetables', 'dietary', 'low-carb', 'pasta-rice-and-grains']
+        self.country_tags = deque(['north-american', 'european', 'asian', 'south-west-pacific'], maxlen=4)
+        self.dietary_tags = deque(
+            ['low-cholesterol', 'meat', 'vegetables', 'dietary', 'low-carb', 'pasta-rice-and-grains'], maxlen=6)
+        self.chosen_tags = []
 
         self.recipe_tag_matrix = self.preload()
+
+        self.model_loops = 0
 
     def add_tag(self, user_id, tag, rating):
         if user_id not in self.collected_tags:
@@ -102,3 +108,25 @@ class ChatData:
             tag_dicts[recipe_id] = {tag: int(recipe_tag_matrix[i, j]) for j, tag in enumerate(mlb.classes_)}
 
         return tag_dicts
+
+    def get_model_loops(self):
+        return self.model_loops
+
+    def increment_model_loops(self):
+        self.model_loops += 1
+
+    def add_chosen_tags(self, tags):
+        country = self.recipes['country_tags'].apply(ast.literal_eval).explode().unique()
+        special = self.recipes['special_tags'].apply(ast.literal_eval).explode().unique()
+        dietary = self.recipes['dietary_tags'].apply(ast.literal_eval).explode().unique()
+        for tag in tags:
+            if tag in country:
+                self.country_tags.appendleft(tag)
+            elif tag in special:
+                self.special_tags.appendleft(tag)
+            elif tag in dietary:
+                self.dietary_tags.appendleft(tag)
+            else:
+                self.chosen_tags.append(tag)
+
+        self.chosen_tags = list(set(self.chosen_tags))

@@ -90,6 +90,10 @@ async def on_message(message: Message) -> None:
         module = module_creator.factory(current_mode)
         chat_data = await module.execute_module(client, message=message, gemini=gemini, chat_data=chat_data)
         done = await chat_data.get_finished()
+        if not done:
+            current_mode = module_modes[0]
+            chat_data.increment_model_loops()
+            logging.info(f'Current mode: {current_mode}')
 
 
 def main():
