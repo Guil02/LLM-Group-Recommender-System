@@ -68,10 +68,14 @@ class TagRating(View):
                             view=self)
 
         if self.evaluated_count() == self.chat_data.get_num_users():
-            await self.msg.edit(content='Thank you for your ratings!', view=None)
+            await self.msg.edit(content=self.generate_end_response(), view=None)
             self.stop()
         else:
             await interaction.response.defer()
+
+    async def generate_end_response(self) -> str:
+        tag = self.tag
+        ratings = self.chat_data.get_tag_ratings(tag)
 
     async def send_rating(self, tag: str):
         self.tag = tag

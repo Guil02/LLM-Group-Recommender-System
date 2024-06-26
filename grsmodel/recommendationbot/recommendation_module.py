@@ -62,8 +62,8 @@ class RecommendationModule(GrsModule):
                 f"**Description:**\n{recipe['description'].iloc[0]} 📖\n\n"
                 f"**Time to cook:** {recipe['minutes'].iloc[0]} minutes ⏲️\n\n"
                 f"**Ingredients:** 🛒\n" + '\n'.join(ingredients) + "\n\n"
-                f"**Steps:** 👩‍🍳\n" + '\n'.join(steps) + "\n\n"
-                "Please accept or reject this recipe:"
+                                                                   f"**Steps:** 👩‍🍳\n" + '\n'.join(steps) + "\n\n"
+                                                                                                            "Please accept or reject this recipe:"
         )
 
         # Split the details message into chunks of 2000 characters each
@@ -123,7 +123,7 @@ class ApprovalView(View):
         user_id = interaction.user.id
         rm = interaction.message
 
-        if state['user_responses'][user_id] is None:  # User hasn't responded yet
+        if state['user_responses'].get(user_id, None) is None:  # User hasn't responded yet
             state['user_responses'][user_id] = True
             approve_count = sum(1 for response in state['user_responses'].values() if response is True)
 

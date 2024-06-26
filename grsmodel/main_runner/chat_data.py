@@ -131,3 +131,10 @@ class ChatData:
                 self.chosen_tags.append(tag)
 
         self.chosen_tags = list(set(self.chosen_tags))
+
+    def get_tag_ratings(self, tag):
+        ratings = {}
+        for user in self.collected_tags.keys():
+            ratings[user] = self.collected_tags[user].get(tag, 0)
+
+        return ratings
