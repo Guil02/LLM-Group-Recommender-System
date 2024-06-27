@@ -62,8 +62,8 @@ class RecommendationModule(GrsModule):
                 f"**Description:**\n{recipe['description'].iloc[0]} 📖\n\n"
                 f"**Time to cook:** {recipe['minutes'].iloc[0]} minutes ⏲️\n\n"
                 f"**Ingredients:** 🛒\n" + '\n'.join(ingredients) + "\n\n"
-                f"**Steps:** 👩‍🍳\n" + '\n'.join(steps) + "\n\n"
-                "Please accept or reject this recipe:"
+                                                                   f"**Steps:** 👩‍🍳\n" + '\n'.join(steps) + "\n\n"
+
         )
 
         # Split the details message into chunks of 2000 characters each
@@ -71,10 +71,9 @@ class RecommendationModule(GrsModule):
 
         # Send each chunk as a separate message
         for idx, chunk in enumerate(chunks):
-            if idx == len(chunks) - 1:
-                await message.channel.send(chunk, view=view)
-            else:
-                await message.channel.send(chunk, view=None)
+            await message.channel.send(chunk, view=None)
+
+        await message.channel.send("Please accept or reject this recipe:", view=view)
 
     async def handle_rejection(self, message_id):
         state = recipe_states.get(message_id)
@@ -135,7 +134,8 @@ class ApprovalView(View):
                 await rm.edit(content="Thank you for your approval! All users have approved.", view=None)
                 await self.module.handle_acceptance(self.message_id)
             else:
-                await rm.edit(content=f"Approval received ({approve_count}/{self.module.num_users}).", view=None)
+                await interaction.channel.send(
+                    f"Thank you for your approval! {approve_count}/{self.module.num_users}")
 
     @discord.ui.button(label="Reject", style=discord.ButtonStyle.danger, custom_id="reject")
     async def reject_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -202,7 +202,8 @@ class RatingView(View):
             else:
                 response_message = "Your rating has been updated!"
 
-            await interaction.message.edit(content=f"{response_message}\n\n{rating_message}", view=None)
+            await interaction.message.edit(content=f"{response_message}\n\n{rating_message}", view=self)
 
             if total_ratings >= self.module.num_users:
+                await interaction.message.edit(content=f"{response_message}\n\n{rating_message}", view=None)
                 await self.module.finalize_ratings(self.message_id)
