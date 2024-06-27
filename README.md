@@ -36,7 +36,3 @@ directory. When all these steps are done the runner.py file can be run.
 * **Leonidas Alexander** - [Alexander](https://github.com/alexanderleonidas) - Developer
 * **Passos Patrício Ferreira Tiago** - [Tiago](https://github.com/Tpf2906) - Developer
 * **Pompigna Lorenzo** - [Lorenzo](https://github.com/Lozzio99) - Developer
-
-## References
-
-* TBD
