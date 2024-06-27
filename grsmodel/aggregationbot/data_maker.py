@@ -1,14 +1,10 @@
-import openai
 import pandas as pd
-import polars as pl
-import recommender
-import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 import pickle
 
 
 def execute_module():
-    recipes = pd.read_csv('grsmodel/main_runner/cleaned_recipes.csv')
+    recipes = pd.read_csv('../main_runner/cleaned_recipes.csv')
     # Convert the recipe tags to a DataFrame
     recipe_tag_matrix = []
     recipe_ids = []
@@ -52,7 +48,7 @@ def execute_module():
 
 def execute_module_1():
     print("Loading data...")
-    recipes = pd.read_csv('grsmodel/main_runner/cleaned_recipes_with_country.csv')
+    recipes = pd.read_csv('../main_runner/cleaned_recipes_with_country.csv')
 
     # Define a function to extract and clean tags from a column
     def extract_tags(tags):

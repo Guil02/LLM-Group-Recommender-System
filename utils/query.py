@@ -1,18 +1,19 @@
-import itertools
 import pandas as pd
 import random
-import recommender
-from sklearn.metrics.pairwise import cosine_similarity
+from grsmodel.aggregationbot import recommender
 import numpy as np
 from tqdm import tqdm
 from utils.helper import Helper
 
 COLUMNS = ['time_tags', 'country_tags', 'dietary_tags', 'special_tags', 'ingredients_tags']
 
+
 def load_data():
     # Load the recipes and interactions data
-    recipes = pd.read_csv("/Users/alexanderleonidas/Documents/Maastricht University/AI Masters/Research Project LLM for Group RS/archive/cleaned_recipes_with_country.csv")
-    interactions = pd.read_csv("/Users/alexanderleonidas/Documents/Maastricht University/AI Masters/Research Project LLM for Group RS/archive/RAW_interactions.csv")
+    recipes = pd.read_csv(
+        "/Users/alexanderleonidas/Documents/Maastricht University/AI Masters/Research Project LLM for Group RS/archive/cleaned_recipes_with_country.csv")
+    interactions = pd.read_csv(
+        "/Users/alexanderleonidas/Documents/Maastricht University/AI Masters/Research Project LLM for Group RS/archive/RAW_interactions.csv")
 
     # Extract unique tags from the dataset
     unique_tags = set()
@@ -30,6 +31,7 @@ def load_data():
 
     return recipes, interactions, users
 
+
 def make_user_profiles(filtered_users, filtered_interactions, recipes):
     # Create an empty dictionary to store the tags for each user
     user_tags = {user: {} for user in filtered_users}
@@ -44,7 +46,7 @@ def make_user_profiles(filtered_users, filtered_interactions, recipes):
 
             # Filter the recipes DataFrame to find the tags for the current recipe_id
             recipe_row = recipes[recipes['id'] == recipe_id]
-            
+
             # Check if the recipe_row is not empty
             if not recipe_row.empty:
                 recipe_tags = recipe_row[name].values[0]
@@ -65,7 +67,7 @@ def make_user_profiles(filtered_users, filtered_interactions, recipes):
         for tag in user_tags[user]:
             if number_appeared[user][tag] > 0:
                 user_tags[user][tag] /= number_appeared[user][tag]
-    
+
     Helper().save_data(user_tags, '.../results/user_profiles.pkl')
     return user_tags
 
@@ -85,7 +87,7 @@ def create_groups(user_tags):
     # Divide the shuffled list into groups of 5
     for i in range(0, len(users_list), max_group_size):
         group = users_list[i:i + max_group_size]
-        
+
         # Collect preferences for the entire group
         group_pref = []
         temp = []
@@ -95,13 +97,14 @@ def create_groups(user_tags):
             print(temp)
             user_preferences = {tag: rating for tag, rating in user_tags[user].items()}
             group_pref.append(user_preferences)
-        
+
         # Append the group's preferences to group_preferences
         group_preferences.append(group_pref)
         group_info.append(temp)
 
     # Helper().save_data(group_info, 'results/test.pkl')
     return group_preferences
+
 
 def get_traditional_scores(group_preferences):
     average = []
@@ -112,8 +115,9 @@ def get_traditional_scores(group_preferences):
         average.append(recommender.average_recommendation(group))
         least_misery.append(recommender.least_misery_recommendation(group))
         most_pleasure.append(recommender.most_pleasure_recommendation(group))
-    
+
     return average, least_misery, most_pleasure
+
 
 # Compute similarity scores between group tags and recipes
 # def compute_similarity(group_vector, recipe_matrix):
@@ -129,8 +133,9 @@ def compute_similarity(group_vector, recipe_matrix):
         similarity_scores.append(similarity)
     return similarity_scores
 
+
 def get_recommendation(recipes, aggregations):
-     # Convert the recipe tags to a list of dictionaries
+    # Convert the recipe tags to a list of dictionaries
     recipe_tag_matrix = []
     recipe_ids = []
     recipe_names = []
@@ -165,6 +170,7 @@ def get_recommendation(recipes, aggregations):
             recommendations[I].append(recommended_recipes[:10])
 
     return recommendations
+
 
 def main():
     recipes, interactions, _ = load_data()

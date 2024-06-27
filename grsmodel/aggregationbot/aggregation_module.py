@@ -2,13 +2,11 @@ import os
 
 from grsmodel.main_runner.grs_module import GrsModule
 from discord import Client
-import recommender
+from grsmodel.aggregationbot import recommender
 from sklearn.metrics.pairwise import cosine_similarity
 import ast
-import pickle
 
 import numpy as np
-import pandas as pd
 
 
 class AggregationModule(GrsModule):
